@@ -10,7 +10,6 @@
               <v-select
                 v-model="select"
                 :items="items"
-                :rules="[(v) => !!v || 'Item is required']"
                 label="Customer"
                 required
               ></v-select>
@@ -30,7 +29,6 @@
               <v-select
                 v-model="select"
                 :items="items"
-                :rules="[(v) => !!v || 'Item is required']"
                 label="Kendaraan"
                 required
               ></v-select>
@@ -39,7 +37,6 @@
               <v-select
                 v-model="select"
                 :items="items"
-                :rules="[(v) => !!v || 'Item is required']"
                 label="Karyawan"
                 required
               ></v-select>
@@ -49,7 +46,6 @@
             <v-col cols="4">
               <v-text-field
                 v-model="name"
-                :rules="nameRules"
                 label="No. Do"
                 required
               ></v-text-field>
@@ -80,10 +76,10 @@
             <v-col cols="4">
               <v-radio-group v-model="radioGroup" label="Pembayaran">
                 <v-radio
-                  v-for="n in 3"
-                  :key="n"
-                  :label="`Radio ${n}`"
-                  :value="n"
+                  v-for="s in status_pembayaran"
+                  :key="s"
+                  :label="s.value"
+                  :value="s.value"
                 ></v-radio>
               </v-radio-group>
             </v-col>
@@ -92,17 +88,14 @@
             <v-col cols="4">
               <v-text-field
                 v-model="name"
-                :rules="nameRules"
                 label="Total Biaya"
                 required
               ></v-text-field>
             </v-col>
           </v-row>
           <v-btn
-            :disabled="!valid"
             color="success"
             class="mr-4"
-            @click="validate"
           >
             Submit
           </v-btn>
@@ -123,31 +116,18 @@ export default {
   data: () => ({
     valid: true,
     name: "",
-    nameRules: [
-      (v) => !!v || "Name is required",
-      (v) => (v && v.length <= 10) || "Name must be less than 10 characters",
-    ],
     email: "",
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
     value: null,
     radioGroup: "",
     select: null,
+    status_pembayaran: [{ value: "cash" }, { value: "bank" }],
     items: ["Item 1", "Item 2", "Item 3", "Item 4"],
     checkbox: false,
   }),
 
   methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
     reset() {
       this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
     },
   },
 };

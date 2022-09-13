@@ -8,16 +8,14 @@
           <v-row>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="noPol"
                 label="No. Pol"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="tahun"
                 label="Tahun"
                 required
               ></v-text-field>
@@ -26,34 +24,26 @@
           <v-row>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="jenis"
                 label="Jenis"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
-              <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                label="Tipe"
-                required
-              ></v-text-field>
+              <v-text-field v-model="tipe" label="Tipe" required></v-text-field>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="nomor_rangka"
                 label="Nomer Rangka"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="nomer_mesin"
                 label="Nomer Mesin"
                 required
               ></v-text-field>
@@ -102,14 +92,7 @@
               </v-text-field>
             </v-col>
           </v-row>
-          <v-btn
-            :disabled="!valid"
-            color="success"
-            class="mr-4"
-            @click="validate"
-          >
-            Submit
-          </v-btn>
+          <v-btn color="success" class="mr-4"> Submit </v-btn>
 
           <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
         </v-form>
@@ -125,33 +108,22 @@ export default {
     DatePickerVue,
   },
   data: () => ({
+    noPol: "",
+    tahun: "",
+    jenis: "",
+    tipe: "",
+    nomor_rangka: "",
+    nomor_mesin: "",
+    masa_berlaku_stnk: "",
+    masa_berlaku_pajak: "",
+    masa_berlaku_kir: "",
     valid: true,
-    name: "",
-    nameRules: [
-      (v) => !!v || "Name is required",
-      (v) => (v && v.length <= 10) || "Name must be less than 10 characters",
-    ],
-    email: "",
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
     value: null,
-    radioGroup: "",
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false,
   }),
 
   methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
     reset() {
       this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
     },
   },
 };

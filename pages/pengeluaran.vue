@@ -8,16 +8,14 @@
           <v-row>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="tanggal"
                 label="Tanggal"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="keterangan"
                 label="Keterangan"
                 required
               ></v-text-field>
@@ -26,30 +24,16 @@
           <v-row>
             <v-col cols="4">
               <v-text-field
-                v-model="name"
-                :rules="nameRules"
+                v-model="total"
                 label="Total"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
-              <v-text-field
-                v-model="name"
-                :rules="nameRules"
-                label="Akun"
-                required
-              ></v-text-field>
+              <v-text-field v-model="akun" label="Akun" required></v-text-field>
             </v-col>
           </v-row>
-          <v-btn
-            :disabled="!valid"
-            color="success"
-            class="mr-4"
-            @click="validate"
-          >
-            Submit
-          </v-btn>
-
+          <v-btn color="success" class="mr-4" @click="validate"> Submit </v-btn>
           <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
         </v-form>
       </v-card>
@@ -60,33 +44,18 @@
 <script>
 export default {
   data: () => ({
-    valid: true,
-    name: "",
-    nameRules: [
-      (v) => !!v || "Name is required",
-      (v) => (v && v.length <= 10) || "Name must be less than 10 characters",
-    ],
-    email: "",
-    emailRules: [
-      (v) => !!v || "E-mail is required",
-      (v) => /.+@.+\..+/.test(v) || "E-mail must be valid",
-    ],
+    tanggal: "",
+    keterangan: "",
+    total_pengeluaran: "",
+    akun: "",
     value: null,
-    radioGroup: "",
     select: null,
     items: ["Item 1", "Item 2", "Item 3", "Item 4"],
-    checkbox: false,
   }),
 
   methods: {
-    validate() {
-      this.$refs.form.validate();
-    },
     reset() {
       this.$refs.form.reset();
-    },
-    resetValidation() {
-      this.$refs.form.resetValidation();
     },
   },
 };

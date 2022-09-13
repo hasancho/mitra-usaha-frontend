@@ -26,7 +26,9 @@
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-toolbar-title v-text="title" />
+      <div class="title">
+        <v-toolbar-title font-size="20px" font-weight="bold" v-text="title" />
+      </div>
       <v-spacer />
       <v-avatar color="indigo">HS</v-avatar>
     </v-app-bar>
@@ -77,7 +79,7 @@ export default {
         },
         {
           icon: "mdi-cart-outline",
-          title: "Data Penjulan",
+          title: "Data Penjualan",
           to: "/penjualan",
         },
         {
@@ -91,14 +93,19 @@ export default {
           to: "/pengeluaran",
         },
         {
+          icon: "mdi-account-outline",
+          title: "Data User",
+          to: "/user",
+        },
+        {
           icon: "mdi-chart-box-outline",
           title: "Laporan",
           to: "/laporan",
         },
         {
-          icon: "mdi-chart-bubble",
-          title: "Inspire",
-          to: "/inspire",
+          icon: "mdi-logout",
+          title: "Logout",
+          to: "/logout",
         },
       ],
       miniVariant: false,
