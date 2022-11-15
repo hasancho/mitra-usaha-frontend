@@ -37,7 +37,7 @@
         <Nuxt />
       </v-container>
     </v-main>
-    <v-footer :absolute="!fixed" app>
+    <v-footer :absolute="fixed" app>
       <span>&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
   </v-app>
@@ -85,12 +85,12 @@ export default {
         {
           icon: "mdi-plus",
           title: "Data Pemasukan",
-          to: "/pemasukan",
+          to: "/pemasukan_kas",
         },
         {
           icon: "mdi-minus",
           title: "Data Pengeluaran",
-          to: "/pengeluaran",
+          to: "/pengeluaran_kas",
         },
         {
           icon: "mdi-account-outline",

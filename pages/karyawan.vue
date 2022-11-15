@@ -1,9 +1,8 @@
 <template>
   <div>
     <v-card class="mt-10 pb-5">
-      <v-card-title>Data Karyawan</v-card-title>
-      <v-divider></v-divider>
-      <v-card class="ma-5">
+      <v-card class="ma-5" v-show="showForm">
+        <v-card-title>{{ modeForm }} Data Karyawan</v-card-title>
         <v-form ref="form" class="pa-5" v-model="valid" lazy-validation>
           <v-row>
             <v-col cols="4">
@@ -34,40 +33,57 @@
               ></v-text-field>
             </v-col>
             <v-col cols="4">
-              <v-text-field
-                v-model="tanggal_masuk"
-                label="Tanggal Masuk"
-                dense
-                hide-details
-                class="pa-5"
+              <v-menu
+                ref="menu1"
+                v-model="menu1"
+                :close-on-content-click="false"
+                transition="scale-transition"
+                offset-y
+                max-width="290px"
+                min-width="auto"
               >
-                <template v-slot:append-outer>
-                  <date-picker v-model="value" />
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="dateFormatted"
+                    label="Tanggal Masuk"
+                    persistent-hint
+                    prepend-icon="mdi-calendar"
+                    v-bind="attrs"
+                    @blur="date = parseDate(dateFormatted)"
+                    v-on="on"
+                  ></v-text-field>
                 </template>
-              </v-text-field>
+                <v-date-picker
+                  v-model="tanggal_masuk"
+                  no-title
+                  @input="menu1 = false"
+                ></v-date-picker>
+              </v-menu>
             </v-col>
           </v-row>
           <v-row>
             <v-col cols="3">
-              <v-radio-group v-model="radioGroup" label="Status Karyawan">
+              <v-radio-group v-model="status_karyawan" label="Status Karyawan">
                 <v-radio
-                  v-for="s in status_karyawan"
-                  :key="s"
-                  :label="s.value"
-                  :value="s.value"
+                  v-for="(pilihan, i) in pilihan_status_karyawan"
+                  :key="i"
+                  :label="pilihan"
+                  :value="pilihan"
+                  :pilihan="pilihan"
                 ></v-radio>
               </v-radio-group>
             </v-col>
-            <v-col cols="3">
+            <v-col cols="4">
               <v-radio-group
                 v-model="status_pernikahan"
                 label="Status Pernikahan"
               >
                 <v-radio
-                  v-for="s in status_pernikahan"
-                  :key="s"
-                  :label="s.value"
-                  :value="s.value"
+                  v-for="(pilihan, i) in pilihan_status_pernikahan"
+                  :key="i"
+                  :label="pilihan"
+                  :value="pilihan"
+                  :pilihan="pilihan"
                 ></v-radio>
               </v-radio-group>
             </v-col>
@@ -75,19 +91,11 @@
               <v-text-field v-model="gaji" label="Gaji" required></v-text-field>
             </v-col>
           </v-row>
-
-          <v-select
-            v-model="select"
-            :items="items"
-            label="Item"
-            required
-          ></v-select>
-
           <v-btn
             :disabled="!valid"
             color="success"
             class="mr-4"
-            @click="validate"
+            @click="saveKaryawan"
           >
             Submit
           </v-btn>
@@ -96,30 +104,193 @@
         </v-form>
       </v-card>
     </v-card>
+    <v-data-table
+      :headers="headers"
+      :items="karyawan"
+      sort-by="calories"
+      class="elevation-1"
+    >
+      <template v-slot:top>
+        <v-toolbar flat>
+          <v-toolbar-title>Data Karyawan</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-dialog v-model="dialog" max-width="500px">
+            <template v-slot:activator="{}">
+              <v-btn
+                color="primary"
+                dark
+                class="mb-2"
+                v-on:click="formVisibility('Tambah', true)"
+              >
+                New Item
+              </v-btn>
+            </template>
+          </v-dialog>
+        </v-toolbar>
+      </template>
+      <template v-slot:item.actions="{ item }">
+        <v-icon small class="mr-2" @click="editKaryawan(item)">
+          mdi-pencil
+        </v-icon>
+        <v-icon small @click="deleteKaryawan(item)"> mdi-delete </v-icon>
+      </template>
+      <template v-slot:no-data>
+        <v-btn color="primary" @click="initialize"> Reset </v-btn>
+      </template>
+    </v-data-table>
   </div>
 </template>
 
 <script>
-import DatePicker from "../components/DatePicker.vue";
 export default {
-  components: {
-    DatePicker,
-  },
-  data: () => ({
+  data: (vm) => ({
     nip: "",
     nik: "",
     nama: "",
     alamat: "",
-    status_karyawan: [{ value: "tetap" }, { value: "tidak tetap" }],
-    status_pernikahan: [{ value: "sudah" }, { value: "belum" }],
-    tanggal_masuk: "",
+    status_karyawan: "",
+    pilihan_status_karyawan: ["tetap", "tidak tetap"],
+    status_pernikahan: "",
+    pilihan_status_pernikahan: ["sudah", "belum"],
+    tanggal_masuk: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+      .toISOString()
+      .substr(0, 10),
+    dateFormatted: vm.formatDate(
+      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+        .toISOString()
+        .substr(0, 10)
+    ),
+    menu1: false,
     gaji: null,
-    radioGroup: "",
-    select: null,
-    items: ["Item 1", "Item 2", "Item 3", "Item 4"],
+    karyawan: [],
+    showForm: false,
+    modeForm: "Tambah",
+    showTable: true,
+    headers: [
+      {
+        text: "NIP",
+        align: "start",
+        sortable: false,
+        value: "nip",
+      },
+      { text: "NIK", value: "nik" },
+      { text: "Nama", value: "nama" },
+      { text: "Alamat", value: "alamat" },
+      { text: "Status Karyawan", value: "status_karyawan" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
   }),
 
+  computed: {
+    formTitle() {
+      return this.editedIndex === -1 ? "New Item" : "Edit Item";
+    },
+    computedDateFormatted() {
+      return this.formatDate(this.tanggal_masuk);
+    },
+  },
+
+  watch: {
+    tanggal_masuk(val) {
+      this.dateFormatted = this.formatDate(this.tanggal_masuk);
+    },
+  },
+
+  mounted() {
+    this.getKaryawan();
+  },
+
   methods: {
+    formVisibility(valueModeForm = "Tambah", valueShowForm) {
+      this.modeForm = valueModeForm;
+      this.showForm = valueShowForm;
+    },
+    async getKaryawan() {
+      const karyawan = await this.$axios("/karyawan");
+      this.karyawan = karyawan.data;
+      console.log(this.karyawan);
+    },
+    editKaryawan(karyawan) {
+      this.showTable = false;
+      this.modeForm = "Ubah";
+      this.showForm = true;
+      this.nip = karyawan.nip;
+      this.nik = karyawan.nik;
+      this.nama = karyawan.nama;
+      this.alamat = karyawan.alamat;
+      this.jabatan = karyawan.jabatan;
+      this.status_karyawan = karyawan.status_karyawan;
+      this.status_pernikahan = karyawan.status_pernikahan;
+      this.tanggal_masuk = karyawan.tanggal_masuk;
+      this.gaji = karyawan.gaji;
+      this.getKaryawan();
+    },
+
+    saveKaryawan() {
+      if (this.modeForm == "Tambah") {
+        console.log("test");
+        const result = this.$axios.post("/karyawan", {
+          nip: this.nip,
+          nik: this.nik,
+          nama: this.nama,
+          alamat: this.alamat,
+          jabatan: this.jabatan,
+          status_karyawan: this.status_karyawan,
+          status_pernikahan: this.status_pernikahan,
+          tanggal_masuk: this.tanggal_masuk,
+          gaji: this.gaji,
+        });
+        console.log(result);
+        return result
+          .then((result) => {
+            this.clearAndRefreshForm(result);
+          })
+          .catch((error) => {
+            console.log(error);
+          });
+      } else if (this.modeForm === "Ubah") {
+        this.$axios
+          .put("/karyawan", {
+            nip: this.nip,
+            nik: this.nik,
+            nama: this.nama,
+            alamat: this.alamat,
+            jabatan: this.jabatan,
+            status_karyawan: this.status_karyawan,
+            status_pernikahan: this.status_pernikahan,
+            tanggal_masuk: this.tanggal_masuk,
+            gaji: this.gaji,
+          })
+          .then((result) => {
+            clearAndRefreshForm(result);
+          });
+      }
+    },
+
+    clearAndRefreshForm() {
+      this.formVisibilty(false);
+      this.nip = "";
+      this.nik = "";
+      this.nama = "";
+      this.alamat = "";
+      this.status_karyawan = "";
+      this.status_pernikahan = "";
+      this.tanggal_masuk = "";
+      this.gaji = 0;
+      this.getKaryawan();
+    },
+    formatDate(date) {
+      if (!date) return null;
+
+      const [year, month, day] = date.split("-");
+      return `${month}/${day}/${year}`;
+    },
+    parseDate(date) {
+      if (!date) return null;
+
+      const [month, day, year] = date.split("/");
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    },
     reset() {
       this.$refs.form.reset();
     },
