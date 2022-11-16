@@ -101,6 +101,7 @@
 <script>
 export default {
   data: (value) => ({
+    id: null,
     tanggal: "",
     keterangan: "",
     total_pengeluaran: "",
@@ -167,11 +168,12 @@ export default {
         this.$axios
           .put("/pengeluaran_kas", {
             tanggal: this.tanggal,
-            keterangan: this.tarif,
+            keterangan: this.keterangan,
             total_pengeluaran_kas: this.total_pengeluaran,
+            id: this.id,
           })
           .then((result) => {
-            clearAndRefreshForm(result);
+            this.clearAndRefreshForm(result);
           });
       }
     },
@@ -182,9 +184,10 @@ export default {
       this.tanggal = pengeluaranKas.tanggal;
       this.keterangan = pengeluaranKas.keterangan;
       this.total_pengeluaran = pengeluaranKas.total_pengeluaran_kas;
-      // this.getPengeluaranKas();
+      this.id = pengeluaranKas.id;
     },
-    clearAndRefreshForm() {
+    clearAndRefreshForm(result) {
+      alert(result.data.message);
       this.formVisibilty(false);
       this.tanggal = "";
       this.keterangan = "";

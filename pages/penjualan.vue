@@ -139,6 +139,7 @@
 <script>
 export default {
   data: () => ({
+    id: null,
     customer: "",
     listCustomer: [],
     listNamaCustomer: [],
@@ -182,11 +183,6 @@ export default {
       { text: "Actions", value: "actions", sortable: false },
     ],
   }),
-  // watch: {
-  //   total_biaya(val) {
-  //     this.total_biaya = this.quantity;
-  //   },
-  // },
   mounted() {
     this.getPenjualan();
     this.getCustomer();
@@ -265,9 +261,10 @@ export default {
             quantity: this.quantity,
             pembayaran: this.pembayaran,
             total_biaya: this.total_biaya,
+            id: this.id,
           })
           .then((result) => {
-            clearAndRefreshForm(result);
+            this.clearAndRefreshForm(result);
           });
       }
     },
@@ -283,7 +280,7 @@ export default {
       this.quantity = penjualan.quantity;
       this.pembayaran = penjualan.pembayaran;
       this.total_biaya = penjualan.total_biaya;
-      this.getPenjualan();
+      this.id = penjualan.id;
     },
     deletePenjualan(penjualan) {
       this.$axios.delete("/penjualan/" + penjualan.id).then((response) => {
@@ -291,7 +288,8 @@ export default {
         this.penjualan();
       });
     },
-    clearAndRefreshForm() {
+    clearAndRefreshForm(result) {
+      alert(result.data.message);
       this.formVisibilty(false);
       this.customer = 0;
       this.pengiriman = 0;

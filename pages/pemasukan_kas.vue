@@ -70,7 +70,7 @@
           <v-toolbar flat>
             <v-toolbar-title>Data Pemasukan Kas</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog max-width="500px">
               <template v-slot:activator="{}">
                 <v-btn
                   color="primary"
@@ -99,6 +99,7 @@
 <script>
 export default {
   data: (value) => ({
+    id: null,
     tanggal: "",
     keterangan: "",
     total_pemasukan: null,
@@ -164,11 +165,12 @@ export default {
         this.$axios
           .put("/pemasukan_kas", {
             tanggal: this.tanggal,
-            keterangan: this.tarif,
+            keterangan: this.keterangan,
             total_pemasukan_kas: this.total_pemasukan,
+            id: this.id,
           })
           .then((result) => {
-            clearAndRefreshForm(result);
+            this.clearAndRefreshForm(result);
           });
       }
     },
@@ -179,8 +181,10 @@ export default {
       this.tanggal = pemasukanKas.tanggal;
       this.keterangan = pemasukanKas.keterangan;
       this.total_pemasukan = pemasukanKas.total_pemasukan_kas;
+      this.id = pemasukanKas.id;
     },
-    clearAndRefreshForm() {
+    clearAndRefreshForm(result) {
+      alert(result.data.message);
       this.formVisibilty(false);
       this.tanggal = "";
       this.keterangan = "";

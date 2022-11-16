@@ -3,7 +3,7 @@
     <v-card class="mt-10 pb-5">
       <v-card class="ma-5" v-show="showForm">
         <v-card-title>{{ modeForm }} Data Pengiriman</v-card-title>
-        <v-form ref="form" class="pa-5" v-model="valid" lazy-validation>
+        <v-form ref="form" class="pa-5" lazy-validation>
           <v-row>
             <v-col cols="4">
               <v-text-field
@@ -53,7 +53,7 @@
           <v-toolbar flat>
             <v-toolbar-title>Data Pengiriman</v-toolbar-title>
             <v-spacer></v-spacer>
-            <v-dialog v-model="dialog" max-width="500px">
+            <v-dialog vmax-width="500px">
               <template v-slot:activator="{}">
                 <v-btn
                   color="primary"
@@ -82,6 +82,7 @@
 <script>
 export default {
   data: () => ({
+    id: null,
     tujuan: "",
     tarif: "",
     biayaPokok: 0,
@@ -133,14 +134,16 @@ export default {
           });
       } else if (this.modeForm === "Ubah") {
         this.$axios
-          .put("/kendaraan", {
+          .put("/pengiriman", {
             tujuan: this.tujuan,
             tarif: this.tarif,
             biaya_pokok: this.biayaPokok,
             material: this.material,
+            id: this.id,
           })
           .then((result) => {
-            clearAndRefreshForm(result);
+            console.log(result.config.data);
+            this.clearAndRefreshForm(result);
           });
       }
     },
@@ -152,8 +155,10 @@ export default {
       this.tarif = pengiriman.tarif;
       this.biayaPokok = pengiriman.biaya_pokok;
       this.material = pengiriman.material;
+      this.id = pengiriman.id;
     },
-    clearAndRefreshForm() {
+    clearAndRefreshForm(result) {
+      alert(result.data.message);
       this.formVisibilty(false);
       this.tujuan = "";
       this.tarif = "";

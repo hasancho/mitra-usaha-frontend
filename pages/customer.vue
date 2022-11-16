@@ -83,6 +83,7 @@ export default {
     CardCustomer,
   },
   data: () => ({
+    id: null,
     npwp: "",
     nama: "",
     alamat: "",
@@ -138,7 +139,7 @@ export default {
       this.nama = customer.nama;
       this.alamat = customer.alamat;
       this.noTelepon = customer.no_telepon;
-      this.getCustomer();
+      this.id = customer.id;
     },
 
     saveCustomer() {
@@ -163,15 +164,18 @@ export default {
             npwp: this.npwp,
             nama: this.nama,
             alamat: this.alamat,
-            no_telepon: this.noTelpon,
+            no_telepon: this.noTelepon,
+            id: this.id,
           })
           .then((result) => {
-            clearAndRefreshForm(result);
+            console.log(result.config.data);
+            this.clearAndRefreshForm(result);
           });
       }
     },
 
-    clearAndRefreshForm() {
+    clearAndRefreshForm(result) {
+      alert(result.data.message);
       this.formVisibilty(false);
       this.npwp = "";
       this.nama = "";
@@ -183,12 +187,6 @@ export default {
 
     reset() {
       this.$refs.form.reset();
-    },
-
-    editItem(item) {
-      this.editedIndex = this.desserts.indexOf(item);
-      this.editedItem = Object.assign({}, item);
-      this.dialog = true;
     },
   },
 };
