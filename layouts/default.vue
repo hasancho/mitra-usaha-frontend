@@ -23,6 +23,11 @@
           </v-list-item-content>
         </v-list-item>
       </v-list>
+      <template v-slot:append>
+        <div class="pa-2">
+          <v-btn block v-on:click="logout"> Logout </v-btn>
+        </div>
+      </template>
     </v-navigation-drawer>
     <v-app-bar :clipped-left="clipped" fixed app>
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
@@ -30,7 +35,7 @@
         <v-toolbar-title font-size="20px" font-weight="bold" v-text="title" />
       </div>
       <v-spacer />
-      <v-avatar color="indigo">HS</v-avatar>
+      <!-- <v-avatar color="indigo">HS</v-avatar> -->
     </v-app-bar>
     <v-main>
       <v-container>
@@ -102,15 +107,22 @@ export default {
           title: "Laporan",
           to: "/laporan",
         },
-        {
-          icon: "mdi-logout",
-          title: "Logout",
-          to: "/logout",
-        },
+        // {
+        //   icon: "mdi-logout",
+        //   title: "Logout",
+        //   to: "/logout",
+        // },
       ],
       miniVariant: false,
       title: "MITRA USAHA",
     };
+  },
+  methods: {
+    async logout() {
+      console.log("hey");
+      await this.$auth.logout();
+      this.$router.push("/login");
+    },
   },
 };
 </script>

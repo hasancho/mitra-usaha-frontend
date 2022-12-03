@@ -89,6 +89,7 @@
               <v-text-field
                 v-model="total_biaya"
                 label="Total Biaya"
+                prefix="Rp."
                 required
               ></v-text-field>
             </v-col>
@@ -176,10 +177,10 @@ export default {
         sortable: false,
         value: "no_do",
       },
-      { text: "Customer", value: "id_customer" },
-      { text: "Pengiriman", value: "id_pengiriman" },
-      { text: "Kendaraan", value: "id_kendaraan" },
-      { text: "karyawan", value: "id_karyawan" },
+      { text: "Customer", value: "npwp" },
+      { text: "Pengiriman", value: "tujuan" },
+      { text: "Kendaraan", value: "no_pol" },
+      { text: "karyawan", value: "nama" },
       { text: "Actions", value: "actions", sortable: false },
     ],
   }),
@@ -206,6 +207,7 @@ export default {
       for (let i = 0; i < this.listCustomer.length; i++) {
         this.listNamaCustomer.push(this.listCustomer[i].id);
       }
+      return listNamaCustomer.substring(0, 1);
     },
     async getPengiriman() {
       const getPengiriman = await this.$axios("/pengiriman");

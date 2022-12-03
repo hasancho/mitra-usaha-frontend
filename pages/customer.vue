@@ -8,7 +8,12 @@
       <v-divider></v-divider>
       <v-card class="ma-5" v-show="showForm">
         <v-card-title>{{ modeForm }} Data Customer</v-card-title>
-        <v-form ref="form" class="pa-5" lazy-validation>
+        <v-form
+          ref="form"
+          class="pa-5"
+          lazy-validation
+          v-if="modeForm == 'Ubah'"
+        >
           <v-row>
             <v-col cols="4">
               <v-text-field v-model="npwp" label="NPWP" required></v-text-field>
@@ -38,6 +43,47 @@
           </v-btn>
           <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
         </v-form>
+        <div class="pa-5" v-else>
+          <v-row>
+            <v-col cols="4">
+              <v-text-field
+                v-model="npwp"
+                label="NPWP"
+                required
+                readonly
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
+                v-model="nama"
+                label="Nama"
+                required
+                readonly
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col cols="4">
+              <v-text-field
+                v-model="alamat"
+                label="Alamat"
+                required
+                readonly
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
+                v-model="noTelepon"
+                label="No. Telepon"
+                required
+                readonly
+              ></v-text-field>
+            </v-col>
+          </v-row>
+          <v-btn color="success">
+            <router-link to="/">Kembali</router-link>
+          </v-btn>
+        </div>
       </v-card>
       <v-data-table
         v-show="showTable"
@@ -69,7 +115,12 @@
           <v-icon small class="mr-2" @click="editCustomer(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deleteCustomer(item)"> mdi-delete </v-icon>
+          <v-icon small class="mr-2" @click="deleteCustomer(item)">
+            mdi-delete
+          </v-icon>
+          <v-icon small class="mr-2" @click="viewCustomer(item)">
+            mdi-eye
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -129,6 +180,17 @@ export default {
       const getCustomer = await this.$axios("/customer");
       this.customer = getCustomer.data;
       console.log(this.customer);
+    },
+
+    viewCustomer(customer) {
+      this.showTable = false;
+      this.modeForm = "Lihat";
+      this.showForm = true;
+      this.npwp = customer.npwp;
+      this.nama = customer.nama;
+      this.alamat = customer.alamat;
+      this.noTelepon = customer.no_telepon;
+      this.id = customer.id;
     },
 
     editCustomer(customer) {

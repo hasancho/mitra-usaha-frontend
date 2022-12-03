@@ -88,7 +88,12 @@
               </v-radio-group>
             </v-col>
             <v-col cols="4">
-              <v-text-field v-model="gaji" label="Gaji" required></v-text-field>
+              <v-text-field
+                v-model="gaji"
+                label="Gaji"
+                prefix="Rp."
+                required
+              ></v-text-field>
             </v-col>
           </v-row>
           <v-btn color="success" class="mr-4" @click="saveKaryawan">

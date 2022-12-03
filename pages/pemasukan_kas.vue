@@ -46,6 +46,7 @@
               <v-text-field
                 v-model="total_pemasukan"
                 label="Total"
+                prefix="Rp."
                 required
               ></v-text-field>
             </v-col>
