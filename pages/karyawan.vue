@@ -25,7 +25,42 @@
             </v-col>
           </v-row>
           <v-row>
-            <v-col cols="4">
+            <v-col cols="12" sm="6" md="4">
+              <v-menu
+                ref="menu1"
+                v-model="menu1"
+                :close-on-content-click="false"
+                :return-value.sync="tanggal_masuk"
+                transition="scale-transition"
+                offset-y
+                min-width="auto"
+              >
+                <template v-slot:activator="{ on, attrs }">
+                  <v-text-field
+                    v-model="tanggal_masuk"
+                    label="Tanggal Masuk"
+                    prepend-icon="mdi-calendar"
+                    readonly
+                    v-bind="attrs"
+                    v-on="on"
+                  ></v-text-field>
+                </template>
+                <v-date-picker v-model="tanggal_masuk" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="tanggal_masuk = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu1.save(tanggal_masuk)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
+              </v-menu>
+            </v-col>
+            <!-- <v-col cols="4">
               <v-text-field
                 v-model="jabatan"
                 label="Jabatan"
@@ -59,7 +94,7 @@
                   @input="menu1 = false"
                 ></v-date-picker>
               </v-menu>
-            </v-col>
+            </v-col> -->
           </v-row>
           <v-row>
             <v-col cols="3">
@@ -141,7 +176,7 @@
 
 <script>
 export default {
-  data: (vm) => ({
+  data: () => ({
     id: null,
     nip: "",
     nik: "",
@@ -152,14 +187,18 @@ export default {
     status_pernikahan: "",
     pilihan_status_pernikahan: ["sudah", "belum"],
     jabatan: "",
+    // tanggal_masuk: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    //   .toISOString()
+    //   .substr(0, 10),
+    // dateFormatted: vm.formatDate(
+    //   new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .substr(0, 10)
+    // ),
     tanggal_masuk: new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
       .toISOString()
       .substr(0, 10),
-    dateFormatted: vm.formatDate(
-      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10)
-    ),
+    modal: false,
     menu1: false,
     gaji: null,
     karyawan: [],
@@ -185,15 +224,15 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
-    computedDateFormatted() {
-      return this.formatDate(this.tanggal_masuk);
-    },
+    // computedDateFormatted() {
+    //   return this.formatDate(this.tanggal_masuk);
+    // },
   },
 
   watch: {
-    tanggal_masuk(val) {
-      this.dateFormatted = this.formatDate(this.tanggal_masuk);
-    },
+    // tanggal_masuk(val) {
+    //   this.dateFormatted = this.formatDate(this.tanggal_masuk);
+    // },
   },
 
   mounted() {
@@ -278,6 +317,12 @@ export default {
       this.gaji = 0;
       this.showTable = true;
       this.getKaryawan();
+    },
+    deleteKaryawan(karyawan) {
+      this.$axios.delete("/karyawan/" + karyawan.id).then((response) => {
+        alert(response.data.message);
+        this.getKaryawan();
+      });
     },
     formatDate(date) {
       if (!date) return null;

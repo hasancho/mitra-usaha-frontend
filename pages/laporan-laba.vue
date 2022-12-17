@@ -1,7 +1,7 @@
 <template>
   <div>
     <v-card class="mt-10 pb-5">
-      <v-card-title>Laporan Pemasukan Kas</v-card-title>
+      <v-card-title>Laporan Laba</v-card-title>
       <v-divider></v-divider>
       <v-card class="ma-5">
         <v-row>
@@ -17,8 +17,9 @@
                   prepend-icon="mdi-calendar"
                   readonly
                 ></v-text-field>
+                <!-- model: {{ dates }} -->
               </v-col>
-              <v-btn color="success" class="mb-5 ml-7" v-on:click="getPemasukan"
+              <v-btn color="success" class="mb-5 ml-7" v-on:click="getPenjualan"
                 >Tampilkan</v-btn
               >
             </v-row>
@@ -31,28 +32,14 @@
                 <template v-slot:default>
                   <thead>
                     <tr>
-                      <th class="text-left">Tanggal</th>
-                      <th class="text-left">Katerangan</th>
-                      <th class="text-left">Total</th>
+                      <th class="text-left">PENJUALAN SEBELUM PAJAK</th>
+                      <th class="text-left">BIAYA POKOK</th>
                     </tr>
                   </thead>
                   <tbody>
-                    <tr v-for="item in pemasukan" :key="item.id">
-                      <td>{{ item.tanggal }}</td>
-                      <td>{{ item.keterangan }}</td>
-                      <td>{{ item.total_pemasukan_kas }}</td>
-                    </tr>
-                  </tbody>
-                  <br />
-                  <thead>
-                    <tr>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>Total Pemasukan:</td>
-                      <td></td>
-                      <td>Rp.{{ total_pemasukan }}</td>
+                    <tr v-for="item in penjualan" :key="item.id">
+                      <td>{{ item.no_do }}</td>
+                      <td>{{ item.quantity }}</td>
                     </tr>
                   </tbody>
                 </template>
@@ -68,9 +55,8 @@
 export default {
   data: () => ({
     dates: ["2022-01-01", "2022-01-02"],
-    pemasukan: [],
+    penjualan: [],
     showTable: false,
-    total_pemasukan: 0,
   }),
   computed: {
     dateRangeText() {
@@ -78,21 +64,13 @@ export default {
     },
   },
   methods: {
-    async getPemasukan() {
-      this.showTable = true;
-      const resultPemasukan = await this.$axios.post("/laporan-pemasukan", {
+    async getPenjualan() {
+      const resultPenjualan = await this.$axios.post("/laporan-penjualan", {
         from_tanggal: this.dates[0] + "T13:00:00",
         to_tanggal: this.dates[1] + "T13:00:00",
       });
-      const resultTotalPemasukan = await this.$axios.post(
-        "/laporan-pemasukan/total-pemasukan",
-        {
-          from_tanggal: this.dates[0] + "T13:00:00",
-          to_tanggal: this.dates[1] + "T13:00:00",
-        }
-      );
-      this.pemasukan = resultPemasukan.data;
-      this.total_pemasukan = resultTotalPemasukan.data[0].sum;
+      console.log(resultPenjualan.data);
+      this.penjualan = resultPenjualan.data;
     },
   },
 };

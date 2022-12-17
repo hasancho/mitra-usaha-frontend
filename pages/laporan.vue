@@ -54,24 +54,24 @@
             </v-card>
           </v-col>
         </v-row>
-        <!-- <v-row>
+        <v-row>
           <v-col cols="6" class="d-flex justify-space-between">
-            <v-card class="ma-10">
+            <!-- <v-card class="ma-10">
               <div style="width: 200px">
                 <v-card-text>
                   <v-icon large color="green darken-2">
                     mdi-chart-box-outline
                   </v-icon>
-                  <p class="text-h6 text--primary">Neraca</p>
+                  <p class="text-h6 text--primary">Laba</p>
                 </v-card-text>
                 <v-card-actions>
                   <v-btn text color="teal accent-4" @click="reveal = true">
-                    Lihat
+                    <router-link to="/laporan-laba">Lihat</router-link>
                   </v-btn>
                 </v-card-actions>
               </div>
-            </v-card>
-            <v-card class="ma-10">
+            </v-card> -->
+            <!-- <v-card class="ma-10">
               <div style="width: 200px">
                 <v-card-text>
                   <v-icon large color="green darken-2">
@@ -100,9 +100,9 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-            </v-card>
+            </v-card> -->
           </v-col>
-        </v-row> -->
+        </v-row>
       </div>
 
       <!-- </v-card> -->

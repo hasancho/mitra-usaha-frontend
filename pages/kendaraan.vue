@@ -7,6 +7,13 @@
           <v-row>
             <v-col cols="4">
               <v-text-field
+                v-model="kode_jo"
+                label="Kode JO"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
                 v-model="noPol"
                 label="No. Pol"
                 required
@@ -54,27 +61,34 @@
                 ref="menu1"
                 v-model="menu1"
                 :close-on-content-click="false"
+                :return-value.sync="masa_berlaku_stnk"
                 transition="scale-transition"
                 offset-y
-                max-width="290px"
                 min-width="auto"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="dateFormatted1"
+                    v-model="masa_berlaku_stnk"
                     label="Masa Berlaku STNK"
-                    persistent-hint
                     prepend-icon="mdi-calendar"
+                    readonly
                     v-bind="attrs"
-                    @blur="date = parseDate(dateFormatted1)"
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="masa_berlaku_stnk"
-                  no-title
-                  @input="menu1 = false"
-                ></v-date-picker>
+                <v-date-picker v-model="masa_berlaku_stnk" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu1 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu1.save(masa_berlaku_stnk)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
               </v-menu>
             </v-col>
             <v-col cols="4">
@@ -82,27 +96,34 @@
                 ref="menu2"
                 v-model="menu2"
                 :close-on-content-click="false"
+                :return-value.sync="masa_berlaku_pajak"
                 transition="scale-transition"
                 offset-y
-                max-width="290px"
                 min-width="auto"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="dateFormatted2"
+                    v-model="masa_berlaku_pajak"
                     label="Masa Berlaku Pajak"
-                    persistent-hint
                     prepend-icon="mdi-calendar"
+                    readonly
                     v-bind="attrs"
-                    @blur="date = parseDate(dateFormatted2)"
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="masa_berlaku_pajak"
-                  no-title
-                  @input="menu2 = false"
-                ></v-date-picker>
+                <v-date-picker v-model="masa_berlaku_pajak" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu2 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu2.save(masa_berlaku_pajak)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
               </v-menu>
             </v-col>
           </v-row>
@@ -112,27 +133,34 @@
                 ref="menu3"
                 v-model="menu3"
                 :close-on-content-click="false"
+                :return-value.sync="masa_berlaku_kir"
                 transition="scale-transition"
                 offset-y
-                max-width="290px"
                 min-width="auto"
               >
                 <template v-slot:activator="{ on, attrs }">
                   <v-text-field
-                    v-model="dateFormatted3"
+                    v-model="masa_berlaku_kir"
                     label="Masa Berlaku Kir"
-                    persistent-hint
                     prepend-icon="mdi-calendar"
+                    readonly
                     v-bind="attrs"
-                    @blur="date = parseDate(dateFormatted3)"
                     v-on="on"
                   ></v-text-field>
                 </template>
-                <v-date-picker
-                  v-model="masa_berlaku_kir"
-                  no-title
-                  @input="menu3 = false"
-                ></v-date-picker>
+                <v-date-picker v-model="masa_berlaku_kir" no-title scrollable>
+                  <v-spacer></v-spacer>
+                  <v-btn text color="primary" @click="menu3 = false">
+                    Cancel
+                  </v-btn>
+                  <v-btn
+                    text
+                    color="primary"
+                    @click="$refs.menu3.save(masa_berlaku_kir)"
+                  >
+                    OK
+                  </v-btn>
+                </v-date-picker>
               </v-menu>
             </v-col>
           </v-row>
@@ -184,33 +212,15 @@
 
 <script>
 export default {
-  data: (vm) => ({
+  data: () => ({
     id: null,
+    kode_jo: "",
     noPol: "",
     tahun: "",
-    jenis: "",
+    jenis: null,
     tipe: "",
     nomor_rangka: "",
     nomor_mesin: "",
-    menu1: false,
-    menu2: false,
-    menu3: false,
-    showForm: false,
-    showTable: true,
-    modeForm: "Tambah",
-    kendaraan: [],
-    headers: [
-      {
-        text: "No. Pol",
-        align: "start",
-        sortable: false,
-        value: "no_pol",
-      },
-      { text: "Jenis", value: "jenis" },
-      { text: "Tipe", value: "tipe" },
-      { text: "Masa Berlaku STNK", value: "masa_berlaku_stnk" },
-      { text: "Actions", value: "actions", sortable: false },
-    ],
     masa_berlaku_stnk: new Date(
       Date.now() - new Date().getTimezoneOffset() * 60000
     )
@@ -226,32 +236,67 @@ export default {
     )
       .toISOString()
       .substr(0, 10),
-    dateFormatted1: vm.formatDate(
-      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10)
-    ),
-    dateFormatted2: vm.formatDate(
-      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10)
-    ),
-    dateFormatted3: vm.formatDate(
-      new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
-        .toISOString()
-        .substr(0, 10)
-    ),
+    modal: false,
+    menu1: false,
+    menu2: false,
+    menu3: false,
+    showForm: false,
+    showTable: true,
+    modeForm: "Tambah",
+    kendaraan: [],
+    headers: [
+      {
+        text: "Kode JO",
+        align: "start",
+        value: "kode_jo",
+      },
+      { text: "No. Pol", value: "no_pol" },
+      { text: "Jenis", value: "jenis" },
+      { text: "Tipe", value: "tipe" },
+      { text: "Actions", value: "actions", sortable: false },
+    ],
+
+    // masa_berlaku_stnk: new Date(
+    //   Date.now() - new Date().getTimezoneOffset() * 60000
+    // )
+    //   .toISOString()
+    //   .substr(0, 10),
+    // masa_berlaku_pajak: new Date(
+    //   Date.now() - new Date().getTimezoneOffset() * 60000
+    // )
+    //   .toISOString()
+    //   .substr(0, 10),
+    // masa_berlaku_kir: new Date(
+    //   Date.now() - new Date().getTimezoneOffset() * 60000
+    // )
+    //   .toISOString()
+    //   .substr(0, 10),
+    // dateFormatted1: vm.formatDate(
+    //   new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .substr(0, 10)
+    // ),
+    // dateFormatted2: vm.formatDate(
+    //   new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .substr(0, 10)
+    // ),
+    // dateFormatted3: vm.formatDate(
+    //   new Date(Date.now() - new Date().getTimezoneOffset() * 60000)
+    //     .toISOString()
+    //     .substr(0, 10)
+    // ),
   }),
   watch: {
-    masa_berlaku_stnk(val) {
-      this.dateFormatted1 = this.formatDate(this.masa_berlaku_stnk);
-    },
-    masa_berlaku_pajak(val) {
-      this.dateFormatted2 = this.formatDate(this.masa_berlaku_pajak);
-    },
-    masa_berlaku_kir(val) {
-      this.dateFormatted3 = this.formatDate(this.masa_berlaku_kir);
-    },
+    // masa_berlaku_stnk(val) {
+    //   this.dateFormatted1 = this.formatDate(this.masa_berlaku_stnk);
+    // },
+    // masa_berlaku_pajak(val) {
+    //   this.dateFormatted2 = this.formatDate(this.masa_berlaku_pajak);
+    // },
+    // masa_berlaku_kir(val) {
+    //   this.dateFormatted3 = this.formatDate(this.masa_berlaku_kir);
+    // },
   },
   mounted() {
     this.getKendaraan();
@@ -269,6 +314,7 @@ export default {
     saveKendaraan() {
       if (this.modeForm == "Tambah") {
         const result = this.$axios.post("/kendaraan", {
+          kode_jo: this.kode_jo,
           no_pol: this.noPol,
           tahun: this.tahun,
           jenis: this.jenis,
@@ -289,6 +335,7 @@ export default {
       } else if (this.modeForm === "Ubah") {
         this.$axios
           .put("/kendaraan", {
+            kode_jo: this.kode_jo,
             no_pol: this.noPol,
             tahun: this.tahun,
             jenis: this.jenis,
@@ -309,6 +356,7 @@ export default {
       this.showTable = false;
       this.modeForm = "Ubah";
       this.showForm = true;
+      this.kode_jo = kendaraan.kode_jo;
       this.noPol = kendaraan.no_pol;
       this.tahun = kendaraan.tahun;
       this.jenis = kendaraan.jenis;
@@ -323,8 +371,9 @@ export default {
     clearAndRefreshForm(result) {
       alert(result.data.message);
       this.formVisibilty(false);
+      this.kode_jo = "";
       this.noPol = "";
-      this.tahun = 0;
+      this.tahun = null;
       this.jenis = "";
       this.tipe = "";
       this.nomor_rangka = "";
@@ -334,6 +383,12 @@ export default {
       this.masa_berlaku_kir = "";
       this.showTable = true;
       this.getKendaraan();
+    },
+    deleteKendaraan(kendaraan) {
+      this.$axios.delete("/kendaraan/" + kendaraan.id).then((response) => {
+        alert(response.data.message);
+        this.getKendaraan();
+      });
     },
     formatDate(date) {
       if (!date) return null;

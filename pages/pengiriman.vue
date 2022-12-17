@@ -2,20 +2,27 @@
   <div>
     <v-card class="mt-10 pb-5">
       <v-card class="ma-5" v-show="showForm">
-        <v-card-title>{{ modeForm }} Data Pengiriman</v-card-title>
+        <v-card-title>{{ modeForm }} DATA TUJUAN PENGIRIMAN</v-card-title>
         <v-form ref="form" class="pa-5" lazy-validation>
           <v-row>
             <v-col cols="4">
               <v-text-field
+                v-model="kode_tujuan"
+                label="KODE TUJUAN"
+                required
+              ></v-text-field>
+            </v-col>
+            <v-col cols="4">
+              <v-text-field
                 v-model="tujuan"
-                label="Tujuan"
+                label="TUJUAN"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
               <v-text-field
                 v-model="tarif"
-                label="Tarif"
+                label="TARIF"
                 required
               ></v-text-field>
             </v-col>
@@ -24,14 +31,14 @@
             <v-col cols="4">
               <v-text-field
                 v-model="biayaPokok"
-                label="Biaya Pokok"
+                label="BIAYA POKOK"
                 required
               ></v-text-field>
             </v-col>
             <v-col cols="4">
               <v-text-field
-                v-model="material"
-                label="Material"
+                v-model="komisi"
+                label="KOMISI"
                 required
               ></v-text-field>
             </v-col>
@@ -51,7 +58,7 @@
       >
         <template v-slot:top>
           <v-toolbar flat>
-            <v-toolbar-title>Data Pengiriman</v-toolbar-title>
+            <v-toolbar-title>DATA TUJUAN PENGIRIMAN</v-toolbar-title>
             <v-spacer></v-spacer>
             <v-dialog vmax-width="500px">
               <template v-slot:activator="{}">
@@ -59,7 +66,7 @@
                   color="primary"
                   dark
                   class="mb-2"
-                  v-on:click="formVisibilty('Tambah', true, false)"
+                  v-on:click="formVisibilty('TAMBAH', true, false)"
                 >
                   New Item
                 </v-btn>
@@ -72,7 +79,7 @@
           <v-icon small class="mr-2" @click="editPengiriman(item)">
             mdi-pencil
           </v-icon>
-          <v-icon small @click="deletePengriman(item)"> mdi-delete </v-icon>
+          <v-icon small @click="deletePengiriman(item)"> mdi-delete </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -83,24 +90,29 @@
 export default {
   data: () => ({
     id: null,
+    kode_tujuan: "",
     tujuan: "",
     tarif: "",
     biayaPokok: 0,
     material: "",
+    komisi: null,
     showForm: false,
     showTable: true,
-    modeForm: "Tambah",
+    modeForm: "TAMBAH",
     pengiriman: [],
     headers: [
       {
-        text: "Tujuan",
+        text: "KODE TUJAN",
         align: "start",
-        sortable: false,
+        value: "kode_tujuan",
+      },
+      {
+        text: "TUJUAN",
         value: "tujuan",
       },
-      { text: "Tarif", value: "tarif" },
-      { text: "Biaya Pokok", value: "biaya_pokok" },
-      { text: "Material", value: "material" },
+      { text: "TARIF", value: "tarif" },
+      { text: "BIAYA POKOK", value: "biaya_pokok" },
+      { text: "KOMISI", value: "komisi" },
       { text: "Actions", value: "actions", sortable: false },
     ],
   }),
@@ -108,7 +120,7 @@ export default {
     this.getPengiriman();
   },
   methods: {
-    formVisibilty(valueForm = "Tambah", valueShowForm, valueShowTable) {
+    formVisibilty(valueForm = "TAMBAH", valueShowForm, valueShowTable) {
       this.modeForm = valueForm;
       this.showForm = valueShowForm;
       this.showTable = valueShowTable;
@@ -118,12 +130,13 @@ export default {
       this.pengiriman = getPengiriman.data;
     },
     savePengiriman() {
-      if (this.modeForm == "Tambah") {
+      if (this.modeForm == "TAMBAH") {
         const result = this.$axios.post("/pengiriman", {
+          kode_tujuan: this.kode_tujuan,
           tujuan: this.tujuan,
           tarif: this.tarif,
           biaya_pokok: this.biayaPokok,
-          material: this.material,
+          komisi: this.komisi,
         });
         return result
           .then((result) => {
@@ -132,13 +145,14 @@ export default {
           .catch((error) => {
             console.log(error);
           });
-      } else if (this.modeForm === "Ubah") {
+      } else if (this.modeForm === "UBAH") {
         this.$axios
           .put("/pengiriman", {
+            kode_tujuan: this.kode_tujuan,
             tujuan: this.tujuan,
             tarif: this.tarif,
             biaya_pokok: this.biayaPokok,
-            material: this.material,
+            komisi: this.komisi,
             id: this.id,
           })
           .then((result) => {
@@ -149,21 +163,29 @@ export default {
     },
     editPengiriman(pengiriman) {
       this.showTable = false;
-      this.modeForm = "Ubah";
+      this.modeForm = "UBAH";
       this.showForm = true;
+      this.kode_tujuan = pengiriman.kode_tujuan;
       this.tujuan = pengiriman.tujuan;
       this.tarif = pengiriman.tarif;
       this.biayaPokok = pengiriman.biaya_pokok;
-      this.material = pengiriman.material;
+      this.komisi = pengiriman.komisi;
       this.id = pengiriman.id;
+    },
+    deletePengiriman(pengiriman) {
+      this.$axios.delete("/pengiriman/" + pengiriman.id).then((response) => {
+        alert(response.data.message);
+        this.getPengiriman();
+      });
     },
     clearAndRefreshForm(result) {
       alert(result.data.message);
       this.formVisibilty(false);
+      this.kode_tujuan = "";
       this.tujuan = "";
       this.tarif = "";
       this.biayaPokok = 0;
-      this.material = "";
+      this.komisi = null;
       this.showTable = true;
       this.getPengiriman();
     },

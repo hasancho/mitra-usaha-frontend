@@ -17,7 +17,6 @@
                   prepend-icon="mdi-calendar"
                   readonly
                 ></v-text-field>
-                model: {{ dates }}
               </v-col>
               <v-btn
                 color="success"
@@ -28,7 +27,7 @@
             </v-row>
           </template>
         </v-row>
-        <v-row>
+        <v-row v-show="showTable">
           <v-col cols="12">
             <template>
               <v-simple-table>
@@ -47,6 +46,17 @@
                       <td>{{ item.total_pengeluaran_kas }}</td>
                     </tr>
                   </tbody>
+                  <br />
+                  <thead>
+                    <tr></tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td>Total Pengeluaran:</td>
+                      <td></td>
+                      <td>Rp.{{ total_pengeluaran }}</td>
+                    </tr>
+                  </tbody>
                 </template>
               </v-simple-table>
             </template>
@@ -61,6 +71,8 @@ export default {
   data: () => ({
     dates: ["2022-01-01", "2022-01-02"],
     pengeluaran: [],
+    showTable: false,
+    total_pengeluaran: 0,
   }),
   computed: {
     dateRangeText() {
@@ -69,11 +81,20 @@ export default {
   },
   methods: {
     async getPengeluaran() {
-      const result = await this.$axios.post("/laporan-pengeluaran", {
+      this.showTable = true;
+      const resultPengeluaran = await this.$axios.post("/laporan-pengeluaran", {
         from_tanggal: this.dates[0] + "T13:00:00",
         to_tanggal: this.dates[1] + "T13:00:00",
       });
-      this.pengeluaran = result.data;
+      const resultTotalPengeluaran = await this.$axios.post(
+        "/laporan-pengeluaran/total-pengeluaran",
+        {
+          from_tanggal: this.dates[0] + "T13:00:00",
+          to_tanggal: this.dates[1] + "T13:00:00",
+        }
+      );
+      this.pengeluaran = resultPengeluaran.data;
+      this.total_pengeluaran = resultTotalPengeluaran.data[0].sum;
     },
   },
 };

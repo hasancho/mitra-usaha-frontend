@@ -29,7 +29,7 @@
         </div>
       </template>
     </v-navigation-drawer>
-    <v-app-bar :clipped-left="clipped" fixed app>
+    <v-app-bar :clipped-left="clipped" fixed app color="pink">
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <div class="title">
         <v-toolbar-title font-size="20px" font-weight="bold" v-text="title" />
@@ -54,12 +54,12 @@ export default {
   data() {
     return {
       clipped: true,
-      drawer: false,
+      drawer: true,
       fixed: false,
       items: [
         {
           icon: "mdi-apps",
-          title: "Welcome",
+          title: "Home",
           to: "/",
         },
         {
@@ -79,7 +79,7 @@ export default {
         },
         {
           icon: "mdi-truck-outline",
-          title: "Data Pengiriman",
+          title: "Data Tujuan Pengiriman",
           to: "/pengiriman",
         },
         {
@@ -87,6 +87,11 @@ export default {
           title: "Data Penjualan",
           to: "/penjualan",
         },
+        // {
+        //   icon: "mdi-cart-outline",
+        //   title: "MU Transporter",
+        //   to: "/penjualan",
+        // },
         {
           icon: "mdi-plus",
           title: "Data Pemasukan",
