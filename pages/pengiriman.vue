@@ -89,7 +89,7 @@
 <script>
 export default {
   data: () => ({
-    id: null,
+    id_pengiriman: null,
     kode_tujuan: "",
     tujuan: "",
     tarif: "",
@@ -153,7 +153,7 @@ export default {
             tarif: this.tarif,
             biaya_pokok: this.biayaPokok,
             komisi: this.komisi,
-            id: this.id,
+            id_pengiriman: this.id_pengiriman,
           })
           .then((result) => {
             console.log(result.config.data);
@@ -170,13 +170,15 @@ export default {
       this.tarif = pengiriman.tarif;
       this.biayaPokok = pengiriman.biaya_pokok;
       this.komisi = pengiriman.komisi;
-      this.id = pengiriman.id;
+      this.id_pengiriman = pengiriman.id_pengiriman;
     },
     deletePengiriman(pengiriman) {
-      this.$axios.delete("/pengiriman/" + pengiriman.id).then((response) => {
-        alert(response.data.message);
-        this.getPengiriman();
-      });
+      this.$axios
+        .delete("/pengiriman/" + pengiriman.id_pengiriman)
+        .then((response) => {
+          alert(response.data.message);
+          this.getPengiriman();
+        });
     },
     clearAndRefreshForm(result) {
       alert(result.data.message);

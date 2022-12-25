@@ -130,8 +130,8 @@
             <v-col cols="4">
               <v-radio-group v-model="pembayaran" label="PEMBAYARAN">
                 <v-radio
-                  v-for="(pilihan_pem, i) in status_pembayaran"
-                  :key="i"
+                  v-for="(pilihan_pem, x) in status_pembayaran"
+                  :key="x"
                   :label="pilihan_pem"
                   :value="pilihan_pem"
                   :pilihan="pilihan_pem"
@@ -308,13 +308,14 @@ export default {
     async getPenjualan() {
       const getPenjualan = await this.$axios("/penjualan");
       this.penjualan = getPenjualan.data;
+      console.log(this.penjualan);
     },
     async getCustomer() {
       const getCustomer = await this.$axios("/customer");
       this.listCustomer = getCustomer.data;
       for (let i = 0; i < this.listCustomer.length; i++) {
         this.listNamaCustomer.push(
-          this.listCustomer[i].id + "-" + this.listCustomer[i].nama
+          this.listCustomer[i].id_customer + "-" + this.listCustomer[i].nama
         );
       }
     },
@@ -323,20 +324,7 @@ export default {
       this.listPengiriman = getPengiriman.data;
       for (let i = 0; i < this.listPengiriman.length; i++) {
         this.listIdPengiriman.push(
-          this.listPengiriman[i].id +
-            "-" +
-            this.listPengiriman[i].kode_tujuan +
-            "-" +
-            this.listPengiriman[i].biaya_pokok
-        );
-      }
-    },
-    async getPengiriman() {
-      const getPengiriman = await this.$axios("/pengiriman");
-      this.listPengiriman = getPengiriman.data;
-      for (let i = 0; i < this.listPengiriman.length; i++) {
-        this.listIdPengiriman.push(
-          this.listPengiriman[i].id +
+          this.listPengiriman[i].id_pengiriman +
             "-" +
             this.listPengiriman[i].kode_tujuan +
             "-" +
@@ -349,11 +337,28 @@ export default {
       this.listKendaraan = getKendaraan.data;
       for (let i = 0; i < this.listKendaraan.length; i++) {
         this.listNoPolKendaraan.push(
-          this.listKendaraan[i].id + "-" + this.listKendaraan[i].no_pol
+          this.listKendaraan[i].id_kendaraan +
+            "-" +
+            this.listKendaraan[i].no_pol
         );
       }
     },
     getTarif() {
+      const stringDelimiter = function (sampleInput, delimiter) {
+        let stringArray = [""];
+        let j = 0;
+
+        for (let i = 0; i < sampleInput.length; i++) {
+          if (sampleInput.charAt(i) == delimiter) {
+            j++;
+            stringArray.push("");
+          } else {
+            stringArray[j] += sampleInput.charAt(i);
+          }
+        }
+        return stringArray;
+      };
+      this.tarif = stringDelimiter(this.pengiriman, "-")[3];
       // this.tarif = this.pengiriman.split("-")[3];
       console.log(this.tarif);
       this.penjualan_sebelum_pajak = Math.round(this.tarif * this.quantity);
@@ -460,9 +465,10 @@ export default {
       this.id = penjualan.id;
     },
     deletePenjualan(penjualan) {
+      console.log(penjualan.id_customer);
       this.$axios.delete("/penjualan/" + penjualan.id).then((response) => {
         alert(response.data.message);
-        // this.penjualan();
+        this.getPenjualan();
       });
     },
     clearAndRefreshForm(result) {
@@ -480,7 +486,7 @@ export default {
       this.penjualan_sesudah_pajak = 0;
       this.showTable = true;
       this.getPenjualan();
-      this.$router.push("/");
+      // this.$router.push("/");
     },
     reset() {
       this.$refs.form.reset();

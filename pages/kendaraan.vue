@@ -202,9 +202,6 @@
           </v-icon>
           <v-icon small @click="deleteKendaraan(item)"> mdi-delete </v-icon>
         </template>
-        <template v-slot:no-data>
-          <v-btn color="primary" @click="initialize"> Reset </v-btn>
-        </template>
       </v-data-table>
     </v-card>
   </div>
@@ -213,7 +210,7 @@
 <script>
 export default {
   data: () => ({
-    id: null,
+    id_kendaraan: null,
     kode_jo: "",
     noPol: "",
     tahun: "",
@@ -345,7 +342,7 @@ export default {
             masa_berlaku_stnk: this.masa_berlaku_stnk,
             masa_berlaku_pajak: this.masa_berlaku_pajak,
             masa_berlaku_kir: this.masa_berlaku_kir,
-            id: this.id,
+            id_kendaraan: this.id_kendaraan,
           })
           .then((result) => {
             this.clearAndRefreshForm(result);
@@ -366,7 +363,7 @@ export default {
       this.masa_berlaku_stnk = kendaraan.masa_berlaku_stnk;
       this.masa_berlaku_pajak = kendaraan.masa_berlaku_pajak;
       this.masa_berlaku_kir = kendaraan.masa_berlaku_kir;
-      this.id = kendaraan.id;
+      this.id_kendaraan = kendaraan.id_kendaraan;
     },
     clearAndRefreshForm(result) {
       alert(result.data.message);
@@ -385,10 +382,12 @@ export default {
       this.getKendaraan();
     },
     deleteKendaraan(kendaraan) {
-      this.$axios.delete("/kendaraan/" + kendaraan.id).then((response) => {
-        alert(response.data.message);
-        this.getKendaraan();
-      });
+      this.$axios
+        .delete("/kendaraan/" + kendaraan.id_kendaraan)
+        .then((response) => {
+          alert(response.data.message);
+          this.getKendaraan();
+        });
     },
     formatDate(date) {
       if (!date) return null;

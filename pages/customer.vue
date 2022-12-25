@@ -88,7 +88,7 @@ export default {
     CardCustomer,
   },
   data: () => ({
-    id: null,
+    id_customer: null,
     npwp: "",
     nama: "",
     alamat: "",
@@ -144,7 +144,7 @@ export default {
       this.nama = customer.nama;
       this.alamat = customer.alamat;
       this.noTelepon = customer.no_telepon;
-      this.id = customer.id;
+      this.id_customer = customer.id_customer;
     },
 
     editCustomer(customer) {
@@ -155,7 +155,7 @@ export default {
       this.nama = customer.nama;
       this.alamat = customer.alamat;
       this.noTelepon = customer.no_telepon;
-      this.id = customer.id;
+      this.id_customer = customer.id_customer;
     },
 
     saveCustomer() {
@@ -181,7 +181,7 @@ export default {
             nama: this.nama,
             alamat: this.alamat,
             no_telepon: this.noTelepon,
-            id: this.id,
+            id_customer: this.id_customer,
           })
           .then((result) => {
             console.log(result.config.data);
@@ -191,10 +191,12 @@ export default {
     },
 
     deleteCustomer(customer) {
-      this.$axios.delete("/customer/" + customer.id).then((response) => {
-        alert(response.data.message);
-        this.getCustomer();
-      });
+      this.$axios
+        .delete("/customer/" + customer.id_customer)
+        .then((response) => {
+          alert(response.data.message);
+          this.getCustomer();
+        });
     },
 
     clearAndRefreshForm(result) {
