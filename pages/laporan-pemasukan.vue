@@ -45,8 +45,7 @@
                   </tbody>
                   <br />
                   <thead>
-                    <tr>
-                    </tr>
+                    <tr></tr>
                   </thead>
                   <tbody>
                     <tr>

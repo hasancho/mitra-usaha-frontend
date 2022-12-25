@@ -56,7 +56,7 @@
         </v-row>
         <v-row>
           <v-col cols="6" class="d-flex justify-space-between">
-            <!-- <v-card class="ma-10">
+            <v-card class="ma-10">
               <div style="width: 200px">
                 <v-card-text>
                   <v-icon large color="green darken-2">
@@ -70,7 +70,7 @@
                   </v-btn>
                 </v-card-actions>
               </div>
-            </v-card> -->
+            </v-card>
             <!-- <v-card class="ma-10">
               <div style="width: 200px">
                 <v-card-text>
