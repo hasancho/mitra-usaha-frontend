@@ -6,8 +6,9 @@
       :clipped="clipped"
       fixed
       app
+      style="background-color: #0081c9"
     >
-      <v-list>
+      <v-list style="color: white">
         <v-list-item
           v-for="(item, i) in items"
           :key="i"
