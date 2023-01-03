@@ -1,53 +1,72 @@
 <template>
   <div>
     <v-card class="mt-10 pb-5">
+      <v-divider></v-divider>
       <v-card class="ma-5" v-show="showForm">
         <v-card-title>{{ modeForm }} DATA TUJUAN PENGIRIMAN</v-card-title>
-        <v-form ref="form" class="pa-5" lazy-validation>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field
-                v-model="kode_tujuan"
-                label="KODE TUJUAN"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="tujuan"
-                label="TUJUAN"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="tarif"
-                label="TARIF"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field
-                v-model="biayaPokok"
-                label="BIAYA POKOK"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="komisi"
-                label="KOMISI"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-btn color="success" class="mr-4" @click="savePengiriman">
-            Submit
+        <div v-show="modeForm === 'UBAH' || modeForm === 'TAMBAH'">
+          <v-form ref="form" class="pa-5" lazy-validation>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="kode_tujuan"
+                  label="KODE TUJUAN"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="tujuan"
+                  label="TUJUAN"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="tarif"
+                  label="TARIF"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="biayaPokok"
+                  label="BIAYA POKOK"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="komisi"
+                  label="KOMISI"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-btn color="success" class="mr-4" @click="savePengiriman">
+              Submit
+            </v-btn>
+            <v-btn color="error" class="mr-4" @click="reset">
+              Reset Form
+            </v-btn>
+          </v-form>
+        </div>
+        <div class="pa-5" v-if="modeForm === 'LIHAT'">
+          <p>Kode Tujuan: {{ kode_tujuan }}</p>
+          <p>Tujuan: {{ tujuan }}</p>
+          <p>Tarif: {{ tarif }}</p>
+          <p>Biaya Pokok: {{ biayaPokok }}</p>
+          <p>Komisi: {{ komisi }}</p>
+          <v-btn color="primary" v-on:click="clearAndRefreshForm">
+            <router-link
+              to="/pengiriman"
+              style="color: white; text-decoration: none"
+              >Back</router-link
+            >
           </v-btn>
-          <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
-        </v-form>
+        </div>
       </v-card>
       <v-data-table
         v-show="showTable"
@@ -76,10 +95,23 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editPengiriman(item)">
-            mdi-pencil
+          <div
+            v-if="
+              loggedInUser.data.role === 'admin' ||
+              loggedInUser.data.role === 'superadmin'
+            "
+            style="float: left"
+          >
+            <v-icon small class="mr-2" @click="editPengiriman(item)">
+              mdi-pencil
+            </v-icon>
+            <v-icon small class="mr-3" @click="deletePengiriman(item)">
+              mdi-delete
+            </v-icon>
+          </div>
+          <v-icon small class="mr-2" @click="viewPengiriman(item)">
+            mdi-eye
           </v-icon>
-          <v-icon small @click="deletePengiriman(item)"> mdi-delete </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -87,6 +119,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data: () => ({
     id_pengiriman: null,
@@ -116,6 +149,9 @@ export default {
       { text: "Actions", value: "actions", sortable: false },
     ],
   }),
+  computed: {
+    ...mapGetters(["isAuthenticated", "loggedInUser"]),
+  },
   mounted() {
     this.getPengiriman();
   },
@@ -140,6 +176,7 @@ export default {
         });
         return result
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           })
           .catch((error) => {
@@ -156,10 +193,21 @@ export default {
             id_pengiriman: this.id_pengiriman,
           })
           .then((result) => {
-            console.log(result.config.data);
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           });
       }
+    },
+    viewPengiriman(pengiriman) {
+      this.showTable = false;
+      this.modeForm = "LIHAT";
+      this.showForm = true;
+      this.kode_tujuan = pengiriman.kode_tujuan;
+      this.tujuan = pengiriman.tujuan;
+      this.tarif = pengiriman.tarif;
+      this.biayaPokok = pengiriman.biaya_pokok;
+      this.komisi = pengiriman.komisi;
+      this.id_pengiriman = pengiriman.id_pengiriman;
     },
     editPengiriman(pengiriman) {
       this.showTable = false;
@@ -181,7 +229,6 @@ export default {
         });
     },
     clearAndRefreshForm(result) {
-      alert(result.data.message);
       this.formVisibilty(false);
       this.kode_tujuan = "";
       this.tujuan = "";

@@ -25,7 +25,7 @@ export default {
   css: [],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
-  plugins: [],
+  plugins: [{ src: "@/plugins/vue-html2pdf", mode: "client" }],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
   components: true,
@@ -64,9 +64,9 @@ export default {
           autoFetch: true,
         },
         endpoints: {
-          login: { url: "/login", method: "post" },
+          login: { url: "/login", method: "post", propertyName: "data.token" },
           logout: false,
-          user: { url: "/api/auth/user", method: "get" },
+          user: { url: "/api/auth/profile", method: "get" },
         },
       },
     },

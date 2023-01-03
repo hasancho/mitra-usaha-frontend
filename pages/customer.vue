@@ -7,37 +7,90 @@
     <v-card class="mt-10 pb-5">
       <v-divider></v-divider>
       <v-card class="ma-5" v-show="showForm">
-        <v-card-title>Data Customer</v-card-title>
-        <v-form ref="form" class="pa-5" lazy-validation>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field v-model="npwp" label="NPWP" required></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field v-model="nama" label="Nama" required></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field
-                v-model="alamat"
-                label="Alamat"
-                required
-              ></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="noTelepon"
-                label="No. Telepon"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-btn color="success" class="mr-4" @click="saveCustomer">
-            Submit
+        <v-card-title>{{ modeForm }} Data Customer</v-card-title>
+        <div v-show="modeForm === 'Ubah' || modeForm === 'Tambah'">
+          <v-form ref="form" class="pa-5" lazy-validation>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="npwp"
+                  label="NPWP"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="nama"
+                  label="Nama"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="alamat"
+                  label="Alamat"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="noTelepon"
+                  label="No. Telepon"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-btn color="success" class="mr-4" @click="saveCustomer">
+              Submit
+            </v-btn>
+            <v-btn color="error" class="mr-4" @click="reset">
+              Reset Form
+            </v-btn>
+          </v-form>
+        </div>
+        <div class="pa-5" v-if="modeForm === 'Lihat'">
+          <client-only>
+            <vue-html2pdf
+              :show-layout="false"
+              :float-layout="true"
+              :enable-download="true"
+              :preview-modal="false"
+              :paginate-elements-by-height="1400"
+              :filename="npwp"
+              :pdf-quality="2"
+              :manual-pagination="false"
+              pdf-format="a4"
+              pdf-orientation="landscape"
+              pdf-content-width="800px"
+              ref="html2Pdf"
+            >
+              <section slot="pdf-content">
+                <div style="margin: 200px">
+                  <p>NPWP: {{ npwp }}</p>
+                  <p>Nama: {{ nama }}</p>
+                  <p>Alamat: {{ alamat }}</p>
+                  <p>No Telepon: {{ noTelepon }}</p>
+                </div>
+              </section>
+            </vue-html2pdf>
+          </client-only>
+          <p>NPWP: {{ npwp }}</p>
+          <p>Nama: {{ nama }}</p>
+          <p>Alamat: {{ alamat }}</p>
+          <p>No Telepon: {{ noTelepon }}</p>
+          <v-btn color="primary" v-on:click="clearAndRefreshForm">
+            <router-link
+              to="/customer"
+              style="color: white; text-decoration: none"
+              >Back</router-link
+            >
           </v-btn>
-          <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
-        </v-form>
+          <!-- <v-btn color="error" v-on:click="generateReport" class="ml-4"
+            >Export to PDF
+          </v-btn> -->
+        </div>
       </v-card>
       <v-data-table
         v-show="showTable"
@@ -66,15 +119,20 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editCustomer(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small class="mr-2" @click="deleteCustomer(item)">
-            mdi-delete
-          </v-icon>
-          <!-- <v-icon small class="mr-2" @click="viewCustomer(item)">
+          <div
+            v-if="loggedInUser.data.role === 'superadmin'"
+            style="float: left"
+          >
+            <v-icon small class="mr-2" @click="editCustomer(item)">
+              mdi-pencil
+            </v-icon>
+            <v-icon small class="mr-3" @click="deleteCustomer(item)">
+              mdi-delete
+            </v-icon>
+          </div>
+          <v-icon small class="mr-2" @click="viewCustomer(item)">
             mdi-eye
-          </v-icon> -->
+          </v-icon>
         </template>
       </v-data-table>
     </v-card>
@@ -82,10 +140,11 @@
 </template>
 
 <script>
-import CardCustomer from "../components/CardCustomer.vue";
+import { mapGetters } from "vuex";
+import VueHtml2pdf from "vue-html2pdf";
 export default {
   components: {
-    CardCustomer,
+    VueHtml2pdf,
   },
   data: () => ({
     id_customer: null,
@@ -119,6 +178,9 @@ export default {
     dialogDelete(val) {
       val || this.closeDelete();
     },
+  },
+  computed: {
+    ...mapGetters(["isAuthenticated", "loggedInUser"]),
   },
   mounted() {
     this.getCustomer();
@@ -168,6 +230,7 @@ export default {
         });
         return result
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
             this.showAlert = true;
           })
@@ -185,6 +248,20 @@ export default {
           })
           .then((result) => {
             console.log(result.config.data);
+            alert(result.data.message);
+            this.clearAndRefreshForm(result);
+          });
+      } else if (this.modeForm === "Lihat") {
+        this.$axios
+          .put("/customer", {
+            npwp: this.npwp,
+            nama: this.nama,
+            alamat: this.alamat,
+            no_telepon: this.noTelepon,
+            id_customer: this.id_customer,
+          })
+          .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           });
       }
@@ -199,8 +276,7 @@ export default {
         });
     },
 
-    clearAndRefreshForm(result) {
-      alert(result.data.message);
+    clearAndRefreshForm() {
       this.formVisibilty(false);
       this.npwp = "";
       this.nama = "";
@@ -212,6 +288,32 @@ export default {
 
     reset() {
       this.$refs.form.reset();
+    },
+
+    generateReport() {
+      this.$refs.html2Pdf.generatePdf();
+    },
+
+    async beforeDownload({ html2pdf, options, pdfContent }) {
+      await html2pdf()
+        .set(options)
+        .from(pdfContent)
+        .toPdf()
+        .get("pdf")
+        .then((pdf) => {
+          const totalPages = pdf.internal.getNumberOfPages();
+          for (let i = 1; i <= totalPages; i++) {
+            pdf.setPage(i);
+            pdf.setFontSize(10);
+            pdf.setTextColor(150);
+            pdf.text(
+              "Page " + i + " of " + totalPages,
+              pdf.internal.pageSize.getWidth() * 0.88,
+              pdf.internal.pageSize.getHeight() - 0.3
+            );
+          }
+        })
+        .save();
     },
   },
 };

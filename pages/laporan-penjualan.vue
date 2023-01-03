@@ -65,8 +65,8 @@
                       <th class="text-left">KODE JO</th>
                       <th class="text-left">NO DO</th>
                       <th class="text-left">QUANTITY</th>
-                      <th class="text-left">PENJUALAN SEBELUM PAJAK</th>
-                      <th class="text-left">PENJUALAN SESUDAH PAJAK</th>
+                      <th class="text-left"></th>
+                      <th class="text-left">PENJUALAN</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -74,7 +74,7 @@
                       <td>{{ item.kode_jo }}</td>
                       <td>{{ item.no_do }}</td>
                       <td>{{ item.quantity }}</td>
-                      <td>Rp.{{ item.penjualan_sebelum_pajak }}</td>
+                      <td></td>
                       <td>Rp.{{ item.penjualan_sesudah_pajak }}</td>
                     </tr>
                   </tbody>
@@ -89,7 +89,7 @@
                       <td>Total Penjualan:</td>
                       <td></td>
                       <td></td>
-                      <td>Rp.{{ total_penjualan_sebelum_pajak }}</td>
+                      <td></td>
                       <td>Rp.{{ total_penjualan_sesudah_pajak }}</td>
                     </tr>
                   </tbody>

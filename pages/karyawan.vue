@@ -1,66 +1,72 @@
 <template>
   <div>
     <v-card class="mt-10 pb-5">
+      <v-divider></v-divider>
       <v-card class="ma-5" v-show="showForm">
         <v-card-title>{{ modeForm }} Data Karyawan</v-card-title>
-        <v-form ref="form" class="pa-5" lazy-validation>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field v-model="nip" label="NIP" required></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field v-model="nik" label="NIK" required></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field v-model="nama" label="Nama" required></v-text-field>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="alamat"
-                label="Alamat"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="12" sm="6" md="4">
-              <v-menu
-                ref="menu1"
-                v-model="menu1"
-                :close-on-content-click="false"
-                :return-value.sync="tanggal_masuk"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="tanggal_masuk"
-                    label="Tanggal Masuk"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="tanggal_masuk" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="tanggal_masuk = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn
-                    text
-                    color="primary"
-                    @click="$refs.menu1.save(tanggal_masuk)"
-                  >
-                    OK
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </v-col>
-            <!-- <v-col cols="4">
+        <div v-show="modeForm === 'Ubah' || modeForm === 'Tambah'">
+          <v-form ref="form" class="pa-5" lazy-validation>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field v-model="nip" label="NIP" required></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field v-model="nik" label="NIK" required></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="nama"
+                  label="Nama"
+                  required
+                ></v-text-field>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="alamat"
+                  label="Alamat"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="12" sm="6" md="4">
+                <v-menu
+                  ref="menu1"
+                  v-model="menu1"
+                  :close-on-content-click="false"
+                  :return-value.sync="tanggal_masuk"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="tanggal_masuk"
+                      label="Tanggal Masuk"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="tanggal_masuk" no-title scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="tanggal_masuk = false">
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="$refs.menu1.save(tanggal_masuk)"
+                    >
+                      OK
+                    </v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+              <!-- <v-col cols="4">
               <v-text-field
                 v-model="jabatan"
                 label="Jabatan"
@@ -95,48 +101,71 @@
                 ></v-date-picker>
               </v-menu>
             </v-col> -->
-          </v-row>
-          <v-row>
-            <v-col cols="3">
-              <v-radio-group v-model="status_karyawan" label="Status Karyawan">
-                <v-radio
-                  v-for="(pilihan, i) in pilihan_status_karyawan"
-                  :key="i"
-                  :label="pilihan"
-                  :value="pilihan"
-                  :pilihan="pilihan"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-            <v-col cols="4">
-              <v-radio-group
-                v-model="status_pernikahan"
-                label="Status Pernikahan"
-              >
-                <v-radio
-                  v-for="(pilihan, i) in pilihan_status_pernikahan"
-                  :key="i"
-                  :label="pilihan"
-                  :value="pilihan"
-                  :pilihan="pilihan"
-                ></v-radio>
-              </v-radio-group>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="gaji"
-                label="Gaji"
-                prefix="Rp."
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-btn color="success" class="mr-4" @click="saveKaryawan">
-            Submit
-          </v-btn>
+            </v-row>
+            <v-row>
+              <v-col cols="3">
+                <v-radio-group
+                  v-model="status_karyawan"
+                  label="Status Karyawan"
+                >
+                  <v-radio
+                    v-for="(pilihan, i) in pilihan_status_karyawan"
+                    :key="i"
+                    :label="pilihan"
+                    :value="pilihan"
+                    :pilihan="pilihan"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="4">
+                <v-radio-group
+                  v-model="status_pernikahan"
+                  label="Status Pernikahan"
+                >
+                  <v-radio
+                    v-for="(pilihan, i) in pilihan_status_pernikahan"
+                    :key="i"
+                    :label="pilihan"
+                    :value="pilihan"
+                    :pilihan="pilihan"
+                  ></v-radio>
+                </v-radio-group>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="gaji"
+                  label="Gaji"
+                  prefix="Rp."
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-btn color="success" class="mr-4" @click="saveKaryawan">
+              Submit
+            </v-btn>
 
-          <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
-        </v-form>
+            <v-btn color="error" class="mr-4" @click="reset">
+              Reset Form
+            </v-btn>
+          </v-form>
+        </div>
+        <div class="pa-5" v-if="modeForm === 'Lihat'">
+          <p>NIP: {{ nip }}</p>
+          <p>NIK: {{ nik }}</p>
+          <p>Nama: {{ nama }}</p>
+          <p>Alamat: {{ alamat }}</p>
+          <p>Status Karyawan: {{ status_karyawan }}</p>
+          <p>Status Pernikahan: {{ status_pernikahan }}</p>
+          <p>Tanggal Masuk: {{ tanggal_masuk }}</p>
+          <p>Gaji: {{ gaji }}</p>
+          <v-btn color="primary" v-on:click="clearAndRefreshForm">
+            <router-link
+              to="/karyawan"
+              style="color: white; text-decoration: none"
+              >Back</router-link
+            >
+          </v-btn>
+        </div>
       </v-card>
     </v-card>
     <v-data-table
@@ -164,17 +193,28 @@
           </v-dialog>
         </v-toolbar>
       </template>
-      <template v-slot:item.actions="{ item }">
-        <v-icon small class="mr-2" @click="editKaryawan(item)">
-          mdi-pencil
+      <template v-slot:item.actions="{ item }"
+        ><div
+          v-if="loggedInUser.data.role === 'superadmin'"
+          style="float: left"
+        >
+          <v-icon small class="mr-2" @click="editKaryawan(item)">
+            mdi-pencil
+          </v-icon>
+          <v-icon small class="mr-3" @click="deleteKaryawan(item)">
+            mdi-delete
+          </v-icon>
+        </div>
+        <v-icon small class="mr-2" @click="viewKaryawan(item)">
+          mdi-eye
         </v-icon>
-        <v-icon small @click="deleteKaryawan(item)"> mdi-delete </v-icon>
       </template>
     </v-data-table>
   </div>
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data: () => ({
     id: null,
@@ -224,6 +264,7 @@ export default {
     formTitle() {
       return this.editedIndex === -1 ? "New Item" : "Edit Item";
     },
+    ...mapGetters(["isAuthenticated", "loggedInUser"]),
     // computedDateFormatted() {
     //   return this.formatDate(this.tanggal_masuk);
     // },
@@ -265,6 +306,7 @@ export default {
         });
         return result
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           })
           .catch((error) => {
@@ -285,9 +327,26 @@ export default {
             id: this.id,
           })
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           });
       }
+    },
+
+    viewKaryawan(karyawan) {
+      this.showTable = false;
+      this.modeForm = "Lihat";
+      this.showForm = true;
+      this.nip = karyawan.nip;
+      this.nik = karyawan.nik;
+      this.nama = karyawan.nama;
+      this.alamat = karyawan.alamat;
+      this.jabatan = karyawan.jabatan;
+      this.status_karyawan = karyawan.status_karyawan;
+      this.status_pernikahan = karyawan.status_pernikahan;
+      this.tanggal_masuk = karyawan.tanggal_masuk;
+      this.gaji = karyawan.gaji;
+      this.id = karyawan.id;
     },
     editKaryawan(karyawan) {
       this.showTable = false;
@@ -305,7 +364,6 @@ export default {
       this.id = karyawan.id;
     },
     clearAndRefreshForm(result) {
-      alert(result.data.message);
       this.formVisibility(false);
       this.nip = "";
       this.nik = "";

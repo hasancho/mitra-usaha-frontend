@@ -1,67 +1,88 @@
 <template>
   <div>
     <v-card class="mt-10 pb-5">
+      <v-divider></v-divider>
       <v-card class="ma-5" v-show="showForm">
         <v-card-title>{{ modeForm }} Data Pengeluaran Kas</v-card-title>
-        <v-form ref="form" class="pa-5" lazy-validation>
-          <v-row>
-            <v-col cols="4">
-              <v-menu
-                ref="menu"
-                v-model="menu"
-                :close-on-content-click="false"
-                :return-value.sync="tanggal"
-                transition="scale-transition"
-                offset-y
-                min-width="auto"
-              >
-                <template v-slot:activator="{ on, attrs }">
-                  <v-text-field
-                    v-model="tanggal"
-                    label="Tanggal"
-                    prepend-icon="mdi-calendar"
-                    readonly
-                    v-bind="attrs"
-                    v-on="on"
-                  ></v-text-field>
-                </template>
-                <v-date-picker v-model="tanggal" no-title scrollable>
-                  <v-spacer></v-spacer>
-                  <v-btn text color="primary" @click="menu = false">
-                    Cancel
-                  </v-btn>
-                  <v-btn text color="primary" @click="$refs.menu.save(tanggal)">
-                    OK
-                  </v-btn>
-                </v-date-picker>
-              </v-menu>
-            </v-col>
-            <v-col cols="4">
-              <v-text-field
-                v-model="keterangan"
-                label="Keterangan"
-                required
-              ></v-text-field>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col cols="4">
-              <v-text-field
-                v-model="total_pengeluaran"
-                label="Total"
-                prefix="Rp."
-                required
-              ></v-text-field>
-            </v-col>
-            <!-- <v-col cols="4">
+        <div v-show="modeForm === 'Ubah' || modeForm === 'Tambah'">
+          <v-form ref="form" class="pa-5" lazy-validation>
+            <v-row>
+              <v-col cols="4">
+                <v-menu
+                  ref="menu"
+                  v-model="menu"
+                  :close-on-content-click="false"
+                  :return-value.sync="tanggal"
+                  transition="scale-transition"
+                  offset-y
+                  min-width="auto"
+                >
+                  <template v-slot:activator="{ on, attrs }">
+                    <v-text-field
+                      v-model="tanggal"
+                      label="Tanggal"
+                      prepend-icon="mdi-calendar"
+                      readonly
+                      v-bind="attrs"
+                      v-on="on"
+                    ></v-text-field>
+                  </template>
+                  <v-date-picker v-model="tanggal" no-title scrollable>
+                    <v-spacer></v-spacer>
+                    <v-btn text color="primary" @click="menu = false">
+                      Cancel
+                    </v-btn>
+                    <v-btn
+                      text
+                      color="primary"
+                      @click="$refs.menu.save(tanggal)"
+                    >
+                      OK
+                    </v-btn>
+                  </v-date-picker>
+                </v-menu>
+              </v-col>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="keterangan"
+                  label="Keterangan"
+                  required
+                ></v-text-field>
+              </v-col>
+            </v-row>
+            <v-row>
+              <v-col cols="4">
+                <v-text-field
+                  v-model="total_pengeluaran"
+                  label="Total"
+                  prefix="Rp."
+                  required
+                ></v-text-field>
+              </v-col>
+              <!-- <v-col cols="4">
               <v-text-field v-model="akun" label="Akun" required></v-text-field>
             </v-col> -->
-          </v-row>
-          <v-btn color="success" class="mr-4" @click="savePengeluaranKas">
-            Submit
+            </v-row>
+            <v-btn color="success" class="mr-4" @click="savePengeluaranKas">
+              Submit
+            </v-btn>
+            <v-btn color="error" class="mr-4" @click="reset">
+              Reset Form
+            </v-btn>
+          </v-form>
+        </div>
+        <div class="pa-5" v-if="modeForm === 'Lihat'">
+          <p>Tanggal: {{ tanggal }}</p>
+          <p>Keterangan: {{ keterangan }}</p>
+          <p>Total Pengeluaran: {{ total_pengeluaran }}</p>
+          <v-btn color="primary" v-on:click="clearAndRefreshForm">
+            <router-link
+              to="/pemasukan_kas"
+              style="color: white; text-decoration: none"
+              >Back</router-link
+            >
           </v-btn>
-          <v-btn color="error" class="mr-4" @click="reset"> Reset Form </v-btn>
-        </v-form>
+        </div>
       </v-card>
       <v-data-table
         v-show="showTable"
@@ -90,11 +111,22 @@
         </template>
 
         <template v-slot:item.actions="{ item }">
-          <v-icon small class="mr-2" @click="editPengeluaranKas(item)">
-            mdi-pencil
-          </v-icon>
-          <v-icon small @click="deletePengeluaranKas(item)">
-            mdi-delete
+          <div
+            v-if="
+              loggedInUser.data.role === 'admin' ||
+              loggedInUser.data.role === 'superadmin'
+            "
+            style="float: left"
+          >
+            <v-icon small class="mr-2" @click="editPengeluaranKas(item)">
+              mdi-pencil
+            </v-icon>
+            <v-icon small class="mr-3" @click="deletePengeluaranKas(item)">
+              mdi-delete
+            </v-icon>
+          </div>
+          <v-icon small class="mr-2" @click="viewPengeluaranKas(item)">
+            mdi-eye
           </v-icon>
         </template>
       </v-data-table>
@@ -103,6 +135,7 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
 export default {
   data: (value) => ({
     id: null,
@@ -145,6 +178,9 @@ export default {
     //   this.dateFormatted = this.formatDate(this.tanggal);
     // },
   },
+  computed: {
+    ...mapGetters(["isAuthenticated", "loggedInUser"]),
+  },
   mounted() {
     this.getPengeluaranKas();
   },
@@ -167,6 +203,7 @@ export default {
         });
         return result
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           })
           .catch((error) => {
@@ -181,9 +218,19 @@ export default {
             id: this.id,
           })
           .then((result) => {
+            alert(result.data.message);
             this.clearAndRefreshForm(result);
           });
       }
+    },
+    viewPengeluaranKas(pengeluaranKas) {
+      this.showTable = false;
+      this.modeForm = "Lihat";
+      this.showForm = true;
+      this.tanggal = pengeluaranKas.tanggal;
+      this.keterangan = pengeluaranKas.keterangan;
+      this.total_pengeluaran = pengeluaranKas.total_pengeluaran_kas;
+      this.id = pengeluaranKas.id;
     },
     editPengeluaranKas(pengeluaranKas) {
       this.showTable = false;
@@ -195,7 +242,6 @@ export default {
       this.id = pengeluaranKas.id;
     },
     clearAndRefreshForm(result) {
-      alert(result.data.message);
       this.formVisibilty(false);
       this.tanggal = "";
       this.keterangan = "";
